@@ -1,0 +1,33 @@
+.gradient-custom-3 {
+/* fallback for old browsers */
+background: #205295;
+
+/* Chrome 10-25, Safari 5.1-6 */
+background: #205295;
+
+/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+background: #205295
+}
+.gradient-custom-4 {
+/* fallback for old browsers */
+background: #205295;
+
+/* Chrome 10-25, Safari 5.1-6 */
+background: #205295;
+
+/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+background: #205295;
+}
+
+.btn {
+    background-color: #205295;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #457ac0;
+}
