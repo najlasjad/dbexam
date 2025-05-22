@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import CustomUserCreationForm
+from najla_app.views import dashboard_home
 
 # Buat logger
 logger = logging.getLogger(__name__)
@@ -57,8 +58,7 @@ def about(request):
 # USECASE VIEW
 @login_required
 def usecase(request):
-    logger.info(f'User {request.user.username} accessed usecase page')
-    return render(request, 'usecase.html')
+    return dashboard_home(request)
 
 # MODEL VIEW (hanya superuser yang boleh)
 @login_required

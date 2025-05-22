@@ -52,14 +52,21 @@
             <div class="menubar">
                 <ul>
                     <li>
-                        <a href="#">Home</a>
+                        <a href="{% url 'home' %}">Home</a>
                     </li>
                     <li>
-                        <a href="#">About</a>
+                        <a href="{% url 'about' %}">About</a>
                     </li>
                     <li>
-                        <a href="{% url 'dashboard_home' %}">ML Dashboard</a>
+                        <a href="{% url 'usecase' %}">Use Case</a>
                     </li>
+                    </li>
+                    {% if request.user.is_authenticated and request.user.is_superuser %}
+                        <li>
+                            <a href="{% url 'model' %}">Model</a>
+                        </li>
+                    {% endif %}
+                    <li>
                 </ul>
             </div>
 

@@ -1,5 +1,3 @@
-# najla_app/management/commands/grade_trend_analysis.py
-
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression

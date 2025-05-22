@@ -1,5 +1,3 @@
-# najla_app/management/commands/course_enrollment_prediction.py
-
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -64,7 +62,6 @@ class Command(BaseCommand):
         ) avg_grade ON e.stu_id = avg_grade.stu_id
         """
         
-        # Create negative samples (students who didn't enroll)
         negative_query = """
         SELECT DISTINCT
             s.stu_id,

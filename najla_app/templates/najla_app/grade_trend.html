@@ -117,25 +117,27 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for trend in semester_trends %}
-                                <tr>
-                                    <td>{{ trend.0 }}</td>
-                                    <td><span class="badge bg-primary">{{ trend.1|floatformat:1 }}%</span></td>
-                                    <td>{{ trend.2 }}</td>
-                                    <td>
-                                        {% if forloop.counter0 > 0 %}
-                                            {% if trend.1 > semester_trends|slice:":forloop.counter0"|last.1 %}
-                                                <i class="fas fa-arrow-up text-success"></i>
-                                            {% else %}
-                                                <i class="fas fa-arrow-down text-danger"></i>
-                                            {% endif %}
-                                        {% else %}
-                                            <i class="fas fa-minus text-muted"></i>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
+    {% for trend in semester_trends %}
+    <tr>
+        <td>{{ trend.0 }}</td>
+        <td><span class="badge bg-primary">{{ trend.1|floatformat:1 }}%</span></td>
+        <td>{{ trend.2 }}</td>
+        <td>
+            {% if forloop.counter0 > 0 %}
+                {% with last_trend=semester_trends|slice:":forloop.counter0"|last %}
+                    {% if trend.1 > last_trend.1 %}
+                        <i class="fas fa-arrow-up text-success"></i>
+                    {% else %}
+                        <i class="fas fa-arrow-down text-danger"></i>
+                    {% endif %}
+                {% endwith %}
+            {% else %}
+                <i class="fas fa-minus text-muted"></i>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
                         </table>
                     </div>
                 </div>
@@ -288,29 +290,36 @@ document.getElementById('gradePredictionForm').addEventListener('submit', functi
                         </tbody>
                     </table>
                 </div>
+                
+                <div class="alert alert-info mt-3">
+                    <h6><i class="fas fa-lightbulb me-2"></i>Recommendations</h6>
+                    <ul class="mb-0">
+                        ${data.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                    </ul>
+                </div>
             `;
             
             document.getElementById('gradePredictionResults').innerHTML = resultsHTML;
         } else {
             document.getElementById('gradePredictionResults').innerHTML = `
                 <div class="alert alert-danger" role="alert">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Error: ${data.error}
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${data.message || 'Failed to generate prediction'}
                 </div>
             `;
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         document.getElementById('gradePredictionResults').innerHTML = `
             <div class="alert alert-danger" role="alert">
-                <i class="fas fa-exclamation-triangle"></i>
-                An error occurred while predicting grades.
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Error: ${error.message}
             </div>
         `;
     });
 });
 
+// Helper function to get CSRF token
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
