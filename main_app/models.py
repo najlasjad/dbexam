@@ -77,7 +77,7 @@ class Assessment(models.Model):
 class Attendance(models.Model):
     attendance_id = models.IntegerField(primary_key=True)
     enroll_id = models.ForeignKey(Enrollment, on_delete=models.CASCADE, db_column='enroll_id')
-    attandance_percentage = models.IntegerField()
+    attendance_percentage = models.IntegerField()
 
     class Meta:
         db_table = 'attendance'

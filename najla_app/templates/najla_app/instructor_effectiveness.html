@@ -1,0 +1,435 @@
+<!-- najla_app/templates/najla_app/instructor_effectiveness.html -->
+{% extends 'navbar.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h1 class="display-5 text-info">{{ page_title }}</h1>
+            <p class="text-muted">{{ description }}</p>
+        </div>
+    </div>
+
+    <!-- Effectiveness Overview -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-chalkboard-teacher fa-3x mb-3"></i>
+                    <h4>{{ top_instructors|length }}</h4>
+                    <p>Active Instructors</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-trophy fa-3x mb-3"></i>
+                    <h4>{{ effectiveness_rankings.0.1|floatformat:1 }}%</h4>
+                    <p>Top Effectiveness Score</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                    <h4>{{ dept_performance|length }}</h4>
+                    <p>Departments Analyzed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Instructor Analysis Form -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-search me-2"></i>
+                        Instructor Analysis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="instructorAnalysisForm">
+                        <div class="mb-3">
+                            <label for="instructor_id" class="form-label">Instructor ID</label>
+                            <input type="number" class="form-control" id="instructor_id" placeholder="Enter instructor ID" required>
+                            <div class="form-text">Enter the ID of the instructor to analyze</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-info w-100">
+                            <i class="fas fa-analytics me-2"></i>
+                            Analyze Instructor
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analysis Results -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>
+                        Analysis Results
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="instructorAnalysisResults" class="text-center text-muted">
+                        <i class="fas fa-info-circle fa-3x mb-3"></i>
+                        <p>Enter instructor ID to get detailed analysis</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Performers -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-star me-2"></i>
+                        Top Performing Instructors
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Instructor</th>
+                                    <th>Avg Grade</th>
+                                    <th>Students</th>
+                                    <th>Classes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for instructor in top_instructors %}
+                                <tr>
+                                    <td>
+                                        {% if forloop.counter <= 3 %}
+                                            <i class="fas fa-medal text-warning"></i>
+                                        {% else %}
+                                            #{{ forloop.counter }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ instructor.1 }}</td>
+                                    <td><span class="badge bg-success">{{ instructor.2|floatformat:1 }}%</span></td>
+                                    <td>{{ instructor.3 }}</td>
+                                    <td>{{ instructor.4 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Effectiveness Rankings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Instructor</th>
+                                    <th>Effectiveness</th>
+                                    <th>Courses</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ranking in effectiveness_rankings %}
+                                <tr>
+                                    <td>{{ ranking.0 }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if ranking.1 > 2 %}bg-success
+                                            {% elif ranking.1 > 0 %}bg-primary
+                                            {% elif ranking.1 > -2 %}bg-warning
+                                            {% else %}bg-danger{% endif %}">
+                                            {{ ranking.1|floatformat:1 }}
+                                        </span>
+                                    </td>
+                                    <td>{{ ranking.2 }}</td>
+                                    <td>
+                                        {% if ranking.1 > 2 %}
+                                            <i class="fas fa-star text-success" title="Highly Effective"></i>
+                                        {% elif ranking.1 > 0 %}
+                                            <i class="fas fa-thumbs-up text-primary" title="Effective"></i>
+                                        {% elif ranking.1 > -2 %}
+                                            <i class="fas fa-equals text-warning" title="Average"></i>
+                                        {% else %}
+                                            <i class="fas fa-arrow-down text-danger" title="Needs Improvement"></i>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Department Performance -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-building me-2"></i>
+                        Department Performance Overview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for dept in dept_performance %}
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="card border-primary">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">{{ dept.0 }}</h6>
+                                    <h4 class="text-primary">{{ dept.2|floatformat:1 }}%</h4>
+                                    <p class="text-muted mb-1">{{ dept.1 }} instructors</p>
+                                    <small class="text-muted">Variance: {{ dept.3|floatformat:1 }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Information -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Analysis Methodology
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Effectiveness Calculation</h6>
+                            <p>Instructor effectiveness is calculated by comparing instructor's average student performance against course baseline performance.</p>
+                            
+                            <h6>Factors Considered</h6>
+                            <ul>
+                                <li>Student grade outcomes</li>
+                                <li>Course difficulty adjustment</li>
+                                <li>Historical performance baselines</li>
+                                <li>Student attendance patterns</li>
+                                <li>Assessment score correlations</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Performance Categories</h6>
+                            <div class="row">
+                                <div class="col-12 mb-2">
+                                    <span class="badge bg-success">Highly Effective</span> 
+                                    <small class="text-muted">Score > +2.0</small>
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <span class="badge bg-primary">Effective</span> 
+                                    <small class="text-muted">Score 0 to +2.0</small>
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <span class="badge bg-warning">Average</span> 
+                                    <small class="text-muted">Score -2.0 to 0</small>
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <span class="badge bg-danger">Needs Improvement</span> 
+                                    <small class="text-muted">Score < -2.0</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('instructorAnalysisForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const instructorId = document.getElementById('instructor_id').value;
+    
+    if (!instructorId) {
+        alert('Please enter instructor ID');
+        return;
+    }
+    
+    // Show loading
+    document.getElementById('instructorAnalysisResults').innerHTML = `
+        <div class="spinner-border text-info" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Analyzing instructor performance...</p>
+    `;
+    
+    // Make analysis request
+    fetch('/najla/analyze/instructor/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            instructor_id: instructorId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const overview = data.instructor_overview;
+            
+            let resultsHTML = `
+                <div class="alert alert-info" role="alert">
+                    <h6><i class="fas fa-user-tie me-2"></i>${overview.name}</h6>
+                    <p class="mb-1"><strong>Department:</strong> ${overview.department}</p>
+                </div>
+                
+                <div class="row text-start">
+                    <div class="col-6">
+                        <strong>Average Grade:</strong><br>
+                        <span class="badge bg-primary">${overview.avg_grade}%</span>
+                    </div>
+                    <div class="col-6">
+                        <strong>Consistency:</strong><br>
+                        <span class="badge bg-secondary">${overview.grade_consistency}</span>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row text-start">
+                    <div class="col-6">
+                        <strong>Total Students:</strong><br>
+                        ${overview.total_students}
+                    </div>
+                    <div class="col-6">
+                        <strong>Classes Taught:</strong><br>
+                        ${overview.classes_taught}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6>Course Performance:</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Avg Grade</th>
+                                <th>Students</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            data.course_performance.forEach(course => {
+                resultsHTML += `
+                    <tr>
+                        <td><small>${course.course}</small></td>
+                        <td><span class="badge bg-primary">${course.avg_grade}%</span></td>
+                        <td>${course.student_count}</td>
+                    </tr>
+                `;
+            });
+            
+            resultsHTML += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h6>Effectiveness Analysis:</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Score</th>
+                                <th>Effectiveness</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            data.effectiveness_analysis.forEach(eff => {
+                const effectivenessColor = eff.effectiveness > 0 ? 'success' : 'danger';
+                resultsHTML += `
+                    <tr>
+                        <td><small>${eff.course}</small></td>
+                        <td>${eff.instructor_avg}%</td>
+                        <td><span class="text-${effectivenessColor}">${eff.effectiveness > 0 ? '+' : ''}${eff.effectiveness}</span></td>
+                    </tr>
+                `;
+            });
+            
+            resultsHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            document.getElementById('instructorAnalysisResults').innerHTML = resultsHTML;
+        } else {
+            document.getElementById('instructorAnalysisResults').innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Error: ${data.error}
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('instructorAnalysisResults').innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                An error occurred while analyzing instructor.
+            </div>
+        `;
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

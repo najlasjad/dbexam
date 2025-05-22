@@ -1,0 +1,234 @@
+
+<!-- najla_app/templates/najla_app/enrollment_prediction.html -->
+{% extends 'navbar.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h1 class="display-5 text-primary">{{ page_title }}</h1>
+            <p class="text-muted">{{ description }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Prediction Form -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-magic me-2"></i>
+                        Make Prediction
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="predictionForm">
+                        <div class="mb-3">
+                            <label for="student_id" class="form-label">Select Student</label>
+                            <select class="form-select" id="student_id" required>
+                                <option value="">Choose a student...</option>
+                                {% for student in students %}
+                                <option value="{{ student.0 }}">{{ student.1 }} (ID: {{ student.0 }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="course_id" class="form-label">Select Course</label>
+                            <select class="form-select" id="course_id" required>
+                                <option value="">Choose a course...</option>
+                                {% for course in courses %}
+                                <option value="{{ course.0 }}">{{ course.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="semester_id" class="form-label">Select Semester</label>
+                            <select class="form-select" id="semester_id" required>
+                                <option value="">Choose a semester...</option>
+                                {% for semester in semesters %}
+                                <option value="{{ semester.0 }}">{{ semester.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-brain me-2"></i>
+                            Predict Enrollment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>
+                        Prediction Results
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="predictionResults" class="text-center text-muted">
+                        <i class="fas fa-info-circle fa-3x mb-3"></i>
+                        <p>Select student, course, and semester to get enrollment prediction</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Information -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Model Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Algorithm</h6>
+                            <p>Random Forest Classifier</p>
+                            
+                            <h6>Features Used</h6>
+                            <ul>
+                                <li>Student Demographics</li>
+                                <li>Department Alignment</li>
+                                <li>Historical Attendance</li>
+                                <li>Historical Grades</li>
+                                <li>Course Difficulty</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Model Performance</h6>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85% Accuracy</div>
+                            </div>
+                            
+                            <h6>Use Cases</h6>
+                            <ul>
+                                <li>Course Planning</li>
+                                <li>Resource Allocation</li>
+                                <li>Student Advisory</li>
+                                <li>Enrollment Forecasting</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('predictionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const studentId = document.getElementById('student_id').value;
+    const courseId = document.getElementById('course_id').value;
+    const semesterId = document.getElementById('semester_id').value;
+    
+    if (!studentId || !courseId || !semesterId) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    // Show loading
+    document.getElementById('predictionResults').innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Making prediction...</p>
+    `;
+    
+    // Make prediction request
+    fetch('/najla/predict/enrollment/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            student_id: studentId,
+            course_id: courseId,
+            semester_id: semesterId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const probability = (data.probability_enroll * 100).toFixed(1);
+            const resultColor = data.prediction === 1 ? 'success' : 'warning';
+            const icon = data.prediction === 1 ? 'fa-check-circle' : 'fa-exclamation-triangle';
+            
+            document.getElementById('predictionResults').innerHTML = `
+                <div class="alert alert-${resultColor}" role="alert">
+                    <i class="fas ${icon} fa-2x mb-3"></i>
+                    <h4>${data.recommendation}</h4>
+                    <p><strong>Enrollment Probability: ${probability}%</strong></p>
+                </div>
+                
+                <div class="progress mb-3">
+                    <div class="progress-bar bg-${resultColor}" role="progressbar" 
+                            style="width: ${probability}%" aria-valuenow="${probability}" 
+                            aria-valuemin="0" aria-valuemax="100">
+                        ${probability}%
+                    </div>
+                </div>
+                
+                <div class="row text-start">
+                    <div class="col-6">
+                        <strong>Will Enroll:</strong><br>
+                        <span class="text-success">${probability}%</span>
+                    </div>
+                    <div class="col-6">
+                        <strong>Won't Enroll:</strong><br>
+                        <span class="text-danger">${(100 - probability).toFixed(1)}%</span>
+                    </div>
+                </div>
+            `;
+        } else {
+            document.getElementById('predictionResults').innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Error: ${data.error}
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('predictionResults').innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                An error occurred while making the prediction.
+            </div>
+        `;
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

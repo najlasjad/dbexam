@@ -1,0 +1,304 @@
+<!-- najla_app/templates/najla_app/dashboard.html -->
+{% extends 'navbar.html' %}
+
+{% block title %}ML Analytics Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h1 class="display-4 text-center text-primary">Machine Learning Analytics Dashboard</h1>
+            <p class="text-center text-muted">Advanced predictive analytics for educational insights</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4" id="statsCards">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title" id="totalStudents">-</h4>
+                            <p class="card-text">Total Students</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title" id="totalInstructors">-</h4>
+                            <p class="card-text">Total Instructors</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title" id="avgGrade">-</h4>
+                            <p class="card-text">Average Grade</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title" id="avgAttendance">-</h4>
+                            <p class="card-text">Average Attendance</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Use Cases Grid -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-4">Machine Learning Use Cases</h2>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-graduate me-2"></i>
+                        Course Enrollment Prediction
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Predict student enrollment likelihood for courses based on historical data, department alignment, and student performance patterns.</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> Binary Classification</li>
+                        <li><i class="fas fa-check text-success"></i> Random Forest Algorithm</li>
+                        <li><i class="fas fa-check text-success"></i> Feature Importance Analysis</li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'enrollment_prediction_dashboard' %}" class="btn btn-primary w-100">
+                        <i class="fas fa-chart-bar me-2"></i>View Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Grade Trend Analysis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Analyze and predict grade trends across semesters, identifying patterns in student performance over time.</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> Time Series Analysis</li>
+                        <li><i class="fas fa-check text-success"></i> Linear Regression Model</li>
+                        <li><i class="fas fa-check text-success"></i> Future Grade Prediction</li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'grade_trend_dashboard' %}" class="btn btn-success w-100">
+                        <i class="fas fa-chart-line me-2"></i>View Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chalkboard-teacher me-2"></i>
+                        Instructor Effectiveness
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Analyze instructor impact on student performance compared to course baselines and peer instructors.</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> Performance Analysis</li>
+                        <li><i class="fas fa-check text-success"></i> Clustering Algorithm</li>
+                        <li><i class="fas fa-check text-success"></i> Effectiveness Scoring</li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'instructor_effectiveness_dashboard' %}" class="btn btn-info w-100">
+                        <i class="fas fa-analytics me-2"></i>View Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Analytics Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-4">Quick Analytics</h2>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Semester Grade Trends</h5>
+                </div>
+                <div class="card-body">
+                    <div id="semesterTrendChart" class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Department Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div id="deptPerformanceChart" class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Training Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-robot me-2"></i>
+                        Model Training Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="badge bg-success me-2">✓</div>
+                                <span>Enrollment Prediction Model</span>
+                            </div>
+                            <small class="text-muted">Last trained: Today</small>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="badge bg-success me-2">✓</div>
+                                <span>Grade Trend Model</span>
+                            </div>
+                            <small class="text-muted">Last trained: Today</small>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="badge bg-success me-2">✓</div>
+                                <span>Instructor Effectiveness Model</span>
+                            </div>
+                            <small class="text-muted">Last trained: Today</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load dashboard statistics
+    loadDashboardStats();
+    
+    // Load charts
+    loadChart('semester_trends', 'semesterTrendChart');
+    loadChart('dept_performance', 'deptPerformanceChart');
+});
+
+function loadDashboardStats() {
+    fetch('/najla/dashboard/stats/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('totalStudents').textContent = data.stats.total_students;
+                document.getElementById('totalInstructors').textContent = data.stats.total_instructors;
+                document.getElementById('avgGrade').textContent = data.stats.overall_avg_grade + '%';
+                document.getElementById('avgAttendance').textContent = data.stats.overall_avg_attendance + '%';
+            }
+        })
+        .catch(error => console.error('Error loading stats:', error));
+}
+
+function loadChart(chartType, containerId) {
+    fetch(`/najla/dashboard/chart/?type=${chartType}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(containerId).innerHTML = 
+                    `<img src="data:image/png;base64,${data.chart}" class="img-fluid" alt="${chartType} chart">`;
+            } else {
+                document.getElementById(containerId).innerHTML = 
+                    `<div class="alert alert-warning">Chart not available: ${data.error}</div>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading chart:', error);
+            document.getElementById(containerId).innerHTML = 
+                '<div class="alert alert-danger">Error loading chart</div>';
+        });
+}
+</script>
+
+<style>
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.badge {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner-border {
+    margin: 2rem auto;
+}
+</style>
+{% endblock %}

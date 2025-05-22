@@ -1,0 +1,329 @@
+<!-- najla_app/templates/najla_app/grade_trend.html -->
+{% extends 'navbar.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h1 class="display-5 text-success">{{ page_title }}</h1>
+            <p class="text-muted">{{ description }}</p>
+        </div>
+    </div>
+
+    <!-- Trend Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body">
+                    <h5 class="card-title">Semester Trends</h5>
+                    <p class="card-text">Grade patterns across semesters</p>
+                    <small>{{ semester_trends|length }} semesters analyzed</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="card-body">
+                    <h5 class="card-title">Department Analysis</h5>
+                    <p class="card-text">Performance by department</p>
+                    <small>{{ dept_trends|length }} departments compared</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="card-body">
+                    <h5 class="card-title">Difficulty Impact</h5>
+                    <p class="card-text">Course difficulty effects</p>
+                    <small>{{ difficulty_trends|length }} levels analyzed</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Future Grade Prediction -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-crystal-ball me-2"></i>
+                        Future Grade Prediction
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="gradePredictionForm">
+                        <div class="mb-3">
+                            <label for="student_id_grade" class="form-label">Student ID</label>
+                            <input type="number" class="form-control" id="student_id_grade" placeholder="Enter student ID" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="future_semesters" class="form-label">Future Semesters</label>
+                            <select class="form-select" id="future_semesters">
+                                <option value="1">1 Semester</option>
+                                <option value="2" selected>2 Semesters</option>
+                                <option value="3">3 Semesters</option>
+                                <option value="4">4 Semesters</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Predict Future Grades
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Prediction Results -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-area me-2"></i>
+                        Prediction Results
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="gradePredictionResults" class="text-center text-muted">
+                        <i class="fas fa-info-circle fa-3x mb-3"></i>
+                        <p>Enter student ID to predict future grades</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trend Analysis Charts -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Semester Grade Trends</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Semester</th>
+                                    <th>Average Grade</th>
+                                    <th>Students</th>
+                                    <th>Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for trend in semester_trends %}
+                                <tr>
+                                    <td>{{ trend.0 }}</td>
+                                    <td><span class="badge bg-primary">{{ trend.1|floatformat:1 }}%</span></td>
+                                    <td>{{ trend.2 }}</td>
+                                    <td>
+                                        {% if forloop.counter0 > 0 %}
+                                            {% if trend.1 > semester_trends|slice:":forloop.counter0"|last.1 %}
+                                                <i class="fas fa-arrow-up text-success"></i>
+                                            {% else %}
+                                                <i class="fas fa-arrow-down text-danger"></i>
+                                            {% endif %}
+                                        {% else %}
+                                            <i class="fas fa-minus text-muted"></i>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Department Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Department</th>
+                                    <th>Average Grade</th>
+                                    <th>Students</th>
+                                    <th>Ranking</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for dept in dept_trends %}
+                                <tr>
+                                    <td>{{ dept.0 }}</td>
+                                    <td><span class="badge bg-info">{{ dept.1|floatformat:1 }}%</span></td>
+                                    <td>{{ dept.2 }}</td>
+                                    <td>
+                                        {% if forloop.counter <= 3 %}
+                                            <i class="fas fa-medal text-warning"></i>
+                                        {% else %}
+                                            #{{ forloop.counter }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Difficulty Analysis -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Course Difficulty Impact</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for difficulty in difficulty_trends %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card text-center
+                                {% if difficulty.0 == 'Easy' %}border-success
+                                {% elif difficulty.0 == 'Medium' %}border-warning
+                                {% else %}border-danger{% endif %}">
+                                <div class="card-body">
+                                    <h5 class="card-title
+                                        {% if difficulty.0 == 'Easy' %}text-success
+                                        {% elif difficulty.0 == 'Medium' %}text-warning
+                                        {% else %}text-danger{% endif %}">
+                                        {{ difficulty.0 }}
+                                    </h5>
+                                    <h3 class="display-6">{{ difficulty.1|floatformat:1 }}%</h3>
+                                    <p class="text-muted">{{ difficulty.2 }} courses</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('gradePredictionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const studentId = document.getElementById('student_id_grade').value;
+    const futureSemesters = document.getElementById('future_semesters').value;
+    
+    if (!studentId) {
+        alert('Please enter student ID');
+        return;
+    }
+    
+    // Show loading
+    document.getElementById('gradePredictionResults').innerHTML = `
+        <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Analyzing trends and predicting future grades...</p>
+    `;
+    
+    // Make prediction request
+    fetch('/najla/predict/future-grades/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            student_id: studentId,
+            future_semesters: parseInt(futureSemesters)
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let resultsHTML = `
+                <div class="alert alert-success" role="alert">
+                    <h6><i class="fas fa-chart-line me-2"></i>Grade Trend Prediction</h6>
+                    <p><strong>Current Grade:</strong> ${data.current_grade}% (Semester ${data.current_semester})</p>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Semester</th>
+                                <th>Predicted Grade</th>
+                                <th>Change</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            data.predictions.forEach(pred => {
+                const changeColor = pred.grade_change > 0 ? 'success' : pred.grade_change < 0 ? 'danger' : 'secondary';
+                const trendIcon = pred.grade_change > 0 ? 'fa-arrow-up' : pred.grade_change < 0 ? 'fa-arrow-down' : 'fa-arrow-right';
+                
+                resultsHTML += `
+                    <tr>
+                        <td>${pred.semester}</td>
+                        <td><span class="badge bg-primary">${pred.predicted_grade}%</span></td>
+                        <td><span class="text-${changeColor}">${pred.grade_change > 0 ? '+' : ''}${pred.grade_change}</span></td>
+                        <td><i class="fas ${trendIcon} text-${changeColor}"></i></td>
+                    </tr>
+                `;
+            });
+            
+            resultsHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            document.getElementById('gradePredictionResults').innerHTML = resultsHTML;
+        } else {
+            document.getElementById('gradePredictionResults').innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Error: ${data.error}
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('gradePredictionResults').innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                An error occurred while predicting grades.
+            </div>
+        `;
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}
